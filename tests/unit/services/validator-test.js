@@ -6,8 +6,8 @@ import {
 } from 'ember-mocha';
 
 describeModule(
-  'service:validation',
-  'ValidationService',
+  'service:validator',
+  'ValidatorService',
   {
     // Specify the other units that are required for this test.
     // needs: ['service:foo']

@@ -23,11 +23,13 @@ export default Ember.Service.extend({
           this.cache[validatorName] = validator;
         }
       }
+
       if (Ember.isEmpty(validator)) {
         Ember.Logger.error(`Validator with the name ${type} was not found.`);
-        reject();
+        return;
+      } else {
+        validator.run(value, options).then(resolve, reject);
       }
-      validator.run(value, options).then(resolve, reject);
     });
   }
 
