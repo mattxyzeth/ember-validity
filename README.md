@@ -1,6 +1,43 @@
 # Validity
 
-This README outlines the details of collaborating on this Ember addon.
+### Component configuration
+
+```javascript
+export default Ember.Component.extend({
+  validation: {
+    type: '', // The type of validation to run
+    valueProperty: '', // What is the name of the property that holds the value
+    on: '', // If you'd like to run the validation on a DOM event
+    options: {
+      url: '', // If the validation should be done remotely, this is the endpoint to post to
+      regex: '' // If you'd like to override the RegEx used in the validator
+    }
+  }
+});
+```
+If you didn't include a DOM event to trigger the validation, you can call `validate` yourself. The validation method will return a Promise so you can catch the errors yourself, or you can leave it up to Validity which will add all the errors to the errors object.
+
+Example
+```javascript
+this.validate()['catch']( (errors)=> {
+  // handle the errors yourself
+});
+```
+
+And since it is a Promise, guess what!?! You can also handle a success response to do some cool UI changes.
+
+Example
+```javascript
+this.validate().then( ()=> {
+  // can you handle the success...?
+});
+```
+
+
+
+### Validators
+
+Create custom validators.
 
 ## Installation
 
