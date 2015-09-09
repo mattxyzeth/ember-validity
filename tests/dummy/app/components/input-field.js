@@ -3,10 +3,10 @@ import ValidatorMixin from 'validity/mixins/components/validate';
 
 export default Ember.Component.extend(ValidatorMixin,{
   validations: {
-    type: 'presence',
+    type: 'remote',
     on: 'focusOut',
     options: {
-      url: '/presence'
+      url: '/api/presence'
     }
   }
 });

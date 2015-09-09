@@ -8,6 +8,7 @@ export default Ember.Component.extend({
     type: '', // The type of validation to run
     valueProperty: '', // What is the name of the property that holds the value
     on: '', // If you'd like to run the validation on a DOM event
+    message: '', // If you'd like to override the default message.
     options: {} // Each validator will have their own set of options.
   }
 });

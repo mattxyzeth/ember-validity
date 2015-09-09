@@ -3,19 +3,19 @@ import ValidatorBase from 'validity/validators/base';
 
 export default ValidatorBase.extend({
 
-  run(value,options) {
+  run(value, message, options) {
     Ember.assert('There is no URL to send the request to.', Ember.isPresent(options.url));
 
     return new Ember.RSVP.Promise( (resolve, reject)=> {
       const ajaxOptions = {
         url: options.url,
         type: 'post',
+        dataType: 'json',
         contentType: 'application/vnd.api+json',
-        data: {value:value},
+        data: JSON.stringify({value:value}),
         success: resolve,
         error: (xhr,response,error)=> {
-          console.log(xhr,response,error);
-          reject();
+          reject(this.processError(xhr.responseJSON));
         }
       };
 
@@ -23,8 +23,10 @@ export default ValidatorBase.extend({
     });
   },
 
-  processError(error) {
-    return error;
+  processError(error,message) {
+    return {
+      message: message || error.errors[0].detail
+    };
   }
 
 });

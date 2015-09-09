@@ -28,7 +28,7 @@ export default Ember.Service.extend({
         Ember.Logger.error(`Validator with the name ${type} was not found.`);
         return;
       } else {
-        validator.run(value, options).then(resolve, reject);
+        validator.run(value, options.message, options.options).then(resolve, reject);
       }
     });
   }
