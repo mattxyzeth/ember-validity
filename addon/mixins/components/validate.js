@@ -23,10 +23,10 @@ export default Ember.Mixin.create({
   validateByEvent() {
     this.validate().then(
       ()=> {
-        console.log('success');
+        this.set('errors', null);
       },
       (errors)=> {
-        console.log(errors);
+        this.set('errors', errors);
       }
     );
   },
