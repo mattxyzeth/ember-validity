@@ -12,7 +12,7 @@ export default ValidatorBase.extend({
       if (value && value.length) {
         resolve();
       } else {
-        reject(this.get('errorMsg'));
+        reject([this.get('errorMsg')]);
       }
     });
   }
