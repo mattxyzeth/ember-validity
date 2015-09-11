@@ -10,6 +10,8 @@ export default Ember.Mixin.create({
     return this.get('errors') && !!this.get('errors').length;
   }),
 
+  errorsUndefined: Ember.computed.equal('errors', undefined),
+
   defaultOptions: {
     type: 'presence',
     valueProperty: 'value',
@@ -34,9 +36,10 @@ export default Ember.Mixin.create({
       }
     )['finally'](()=> {
       // Report to the parent the error state
-      if (this.attrs && this.attrs.reportError) {
-        // for Glimmer components
-        this.attrs.reportError(this, this.get('hasError'));
+      if (this.isGlimmerComponent) { // for Glimmer components
+        if (this.attrs.reportError) {
+          this.attrs.reportError(this, this.get('hasError'));
+        }
       } else {
         // otherwise use sendAction
         this.sendAction('reportError', this, this.get('hasError'));
@@ -48,9 +51,9 @@ export default Ember.Mixin.create({
     const defaults = this.get('defaultOptions');
     const options = Ember.merge(defaults, this.get('validations'));
 
-    // Check is this is a Glimmer Component that uses the new attrs property
+    // Check if this is a Glimmer Component that uses the attrs property
     let value;
-    if (this.attrs) {
+    if (this.isGlimmerComponent) {
       value = this.attrs[options.valueProperty];
     } else {
       value = this.get(options.valueProperty);

@@ -15,7 +15,7 @@ export default ValidatorBase.extend({
         data: JSON.stringify({value:value}),
         success: resolve,
         error: (xhr,response,error)=> {
-          reject(this.processError(xhr.responseJSON));
+          reject([this.processError(xhr.responseJSON, message)]);
         }
       };
 

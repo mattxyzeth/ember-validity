@@ -1,3 +1,21 @@
 <label for="username">Username</label>
 
 {{input value=value name='username'}}
+
+{{#unless errorsUndefined}}
+
+  {{#if hasError}}
+
+    {{#each errors as |error|}}
+
+      <p>{{error.message}}</p>
+
+    {{/each}}
+
+  {{else}}
+
+    <p>success</p>
+
+  {{/if}}
+
+{{/unless}}
