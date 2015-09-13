@@ -37,6 +37,25 @@ this.validate().then( ()=> {
 
 Create custom validators.
 
+
+### Error Messages
+
+Use the `validator-messgages` component to display your error messages. Simply add the component to your template and pass it the errors object.
+
+### Error Detection Mixin
+
+If you'd like support for detecting when your validators return errors, add the `error-detection` mixin to your component and you will have the `hasErrors` and `errorsUndefined` properties available to use.
+
+```handlebars
+{{#unless errorsUndefined}}
+  {{#if hasErrors}}
+    <p>There was an error</p>
+  {{else}
+    <p>All is good</p>
+  {{/if}
+{{/unless}}
+```
+
 ## Installation
 
 * `git clone` this repository

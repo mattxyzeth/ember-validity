@@ -6,12 +6,6 @@ export default Ember.Mixin.create({
 
   validator: inject.service(),
 
-  hasError: Ember.computed('errors', function() {
-    return this.get('errors') && !!this.get('errors').length;
-  }),
-
-  errorsUndefined: Ember.computed.equal('errors', undefined),
-
   defaultOptions: {
     type: 'presence',
     valueProperty: 'value',
