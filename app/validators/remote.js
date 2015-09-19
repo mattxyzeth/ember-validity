@@ -6,27 +6,10 @@ export default ValidatorBase.extend({
   run(value, message, options) {
     Ember.assert('There is no URL to send the request to.', Ember.isPresent(options.url));
 
-    return new Ember.RSVP.Promise( (resolve, reject)=> {
-      const ajaxOptions = {
-        url: options.url,
-        type: 'post',
-        dataType: 'json',
-        contentType: 'application/vnd.api+json',
-        data: JSON.stringify({value:value}),
-        success: resolve,
-        error: (xhr,response,error)=> {
-          reject([this.processError(xhr.responseJSON, message)]);
-        }
-      };
+    const adapter = this.container.lookup('adapter:validity');
+    adapter.endPoint = options.url;
 
-      Ember.$.ajax(ajaxOptions);
-    });
-  },
-
-  processError(error,message) {
-    return {
-      message: message || error.errors[0].detail
-    };
+    return adapter.request({value: value});
   }
 
 });
