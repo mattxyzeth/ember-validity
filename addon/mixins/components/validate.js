@@ -1,58 +1,92 @@
 import Ember from 'ember';
+import ErrorDetection from 'validity/mixins/components/error-detection';
+import DS from 'ember-data';
 
-const { on, inject } = Ember;
+const { on, inject, isEmpty, Logger } = Ember;
+const { keys } = Object;
 
-export default Ember.Mixin.create({
+const errors = new DS.Errors();
+
+export default Ember.Mixin.create(ErrorDetection, {
+
+  errors,
 
   validator: inject.service(),
 
-  defaultOptions: {
-    type: 'presence',
-    valueProperty: 'value',
-    options: {}
-  },
-
+  /**
+   * Sets up the validations and DOM events that trigger the validations.
+   *
+   * @method setUp
+   * @private
+   */
   _setup: on('init', function() {
-    const eventName = this.get('validations.on');
+    const rules = this.get('validations');
 
-    if (eventName) {
-      this.on(eventName, this.validateByEvent);
+    if (isEmpty(rules)) {
+      Logger.warn('No validation object was found.');
+    } else {
+
+      // handle global event listener
+      if (rules.hasOwnProperty('on')) {
+        this.on(rules.on, this.validate);
+      }
+
+      // handle individual event listeners
+      keys(rules).forEach((type)=> {
+        if (typeof rules[type] === 'object') {
+          this._registerValidationEvents(type, rules[type]);
+        }
+      });
+
+      // convert and set the validators
+      this.set('validations', this.get('validator').convertValidations(rules));
     }
+
   }),
 
-  validateByEvent() {
-    this.validate().then(
-      ()=> {
-        this.set('errors', []);
-      },
-      (errors)=> {
-        this.set('errors', errors);
+  /**
+   * Loops over the rules for a validator type and if an `on` property is
+   * found then register the event for validating the property.
+   *
+   * @method registerValidationEvents
+   * @param {String} type The validator type
+   * @param {Object} rules The object of rules to inspect
+   * @private
+   */
+  _registerValidationEvents(type, rules) {
+    const validationRules = this.get('validations');
+
+    keys(rules).forEach((property)=> {
+      const options = validationRules[type][property];
+
+      if (typeof options === 'object' && options.hasOwnProperty('on')) {
+        this.on(options.on, ()=> {
+          this._validateOne(`${type}:${property}`);
+        });
       }
-    )['finally'](()=> {
-      // Report to the parent the error state
-      if (this.isGlimmerComponent) { // for Glimmer components
-        if (this.attrs.reportError) {
-          this.attrs.reportError(this, this.get('hasError'));
-        }
-      } else {
-        // otherwise use sendAction
-        this.sendAction('reportError', this, this.get('hasError'));
-      }
+
     });
   },
 
+  /**
+   * Validates the properties described in the validations map and returns a Promise.
+   *
+   * @return {Promise} The promise that resolves the validation results
+   */
   validate() {
-    const defaults = this.get('defaultOptions');
-    const options = Ember.merge(defaults, this.get('validations'));
+    return this._validate(this.get('validations'));
+  },
 
-    // Check if this is a Glimmer Component that uses the attrs property
-    let value;
-    if (this.isGlimmerComponent) {
-      value = this.attrs[options.valueProperty];
-    } else {
-      value = this.get(options.valueProperty);
-    }
+  _validateOne(prop) {
+    const rules = { [prop]: this.get(`validations.${prop}`) };
+    this._validate(rules);
+  },
 
-    return this.get('validator').validate(options.type,value,options);
+  _validate(validations) {
+    keys(validations).forEach((key)=> {
+      validations[key].value = this.get(validations[key].property);
+    });
+
+    return this.get('validator').validate(validations, this.get('errors'));
   }
 });

@@ -18,16 +18,21 @@ export default Ember.Object.extend({
     return url.replace(/\/\//g, '/');
   }),
 
-  request(data,message) {
+  request(data, options) {
+    const { message } = options;
+
     return new Ember.RSVP.Promise( (resolve, reject)=> {
       const ajaxOptions = {
         url: this.get('url'),
         type: 'post',
-        dataType: 'json',
         contentType: 'application/vnd.api+json',
+        beforeSend: (xhr)=> {
+          xhr.setRequestHeader('Accept', 'application/vnd.api+json');
+        },
+        dataType: 'json',
         data: JSON.stringify(data),
         success: resolve,
-        error: (xhr)=> {
+        error: (xhr, error, status)=> {
           reject([this.processError(xhr.responseJSON, message)]);
         }
       };
@@ -37,6 +42,7 @@ export default Ember.Object.extend({
   },
 
   processError(error,message) {
+    // TODO: make this process multiple errors.
     return {
       message: message || error.errors[0].detail
     };

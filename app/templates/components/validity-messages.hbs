@@ -1,17 +1,13 @@
 <div class="validity-messages">
 
-  {{#unless errorsUndefined}}
+  {{#if hasErrors}}
 
-    {{#if hasErrors}}
+    {{#each attrs.errors as |error|}}
 
-      {{#each attrs.errors as |error|}}
+      <p class={{errorClass}}>{{error.message}}</p>
 
-        <p class={{errorClass}}>{{error.message}}</p>
+    {{/each}}
 
-      {{/each}}
-
-    {{/if}}
-
-  {{/unless}}
+  {{/if}}
 
 </div>
