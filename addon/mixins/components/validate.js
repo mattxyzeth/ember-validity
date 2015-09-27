@@ -6,8 +6,6 @@ const { keys } = Object;
 
 export default Ember.Mixin.create({
 
-  errors: DS.Errors.create(),
-
   validationState: 'pending',
 
   validator: inject.service(),
@@ -22,6 +20,9 @@ export default Ember.Mixin.create({
    */
   _setup: on('init', function() {
     const rules = this.get('validations');
+
+    // Set up the errors object for this instance
+    this.set('errors', DS.Errors.create());
 
     if (isEmpty(rules)) {
       Logger.warn('No validation object was found.');

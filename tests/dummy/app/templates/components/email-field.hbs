@@ -1,0 +1,11 @@
+<div>
+
+  <label for="email">Email</label>
+
+  {{input type="email" name="email" value="email"}}
+
+  <button {{action 'submit'}}>Submit</button>
+
+  <validity-messages errors={{errors}} />
+
+</div>
