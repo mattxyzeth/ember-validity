@@ -9,10 +9,10 @@ export default ValidatorBase.extend({
 
   run(value, options) {
     let message;
-    if (options.message) {
+    if (options && options.message) {
       message = {
         message: options.message
-      }
+      };
     } else {
       message = this.get('errorMsg');
     }
