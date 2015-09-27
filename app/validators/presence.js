@@ -7,12 +7,21 @@ export default ValidatorBase.extend({
     message: 'This is a required field.'
   },
 
-  run(value) {
+  run(value, options) {
+    let message;
+    if (options.message) {
+      message = {
+        message: options.message
+      }
+    } else {
+      message = this.get('errorMsg');
+    }
+
     return new Ember.RSVP.Promise( (resolve, reject)=> {
       if (value && value.length) {
         resolve();
       } else {
-        reject([this.get('errorMsg')]);
+        reject([message]);
       }
     });
   }
