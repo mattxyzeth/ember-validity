@@ -1,5 +1,5 @@
 module.exports = {
-  description: ''
+  description: 'Generates a validator module.'
 
   // locals: function(options) {
   //   // Return custom template variables here.
