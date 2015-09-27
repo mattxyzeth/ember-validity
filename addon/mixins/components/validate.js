@@ -111,11 +111,13 @@ export default Ember.Mixin.create({
 
   _validate(validations) {
     keys(validations).forEach((key)=> {
+      const property = validations[key].property;
       let value;
-      if (this.isGlimmerComponent) {
-        value = this.attrs[validations[key].property];
+
+      if (this.isGlimmerComponent && this.attrs[property]) {
+        value = this.attrs[property];
       } else {
-        value = this.get(validations[key].property);
+        value = this.get(property);
       }
       validations[key].value = value;
     });
