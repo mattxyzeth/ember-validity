@@ -32,7 +32,7 @@ export default Ember.Object.extend({
         dataType: 'json',
         data: JSON.stringify(data),
         success: resolve,
-        error: (xhr, error, status)=> {
+        error: (xhr)=> {
           reject([this.processError(xhr.responseJSON, message)]);
         }
       };

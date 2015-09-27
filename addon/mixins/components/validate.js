@@ -4,11 +4,9 @@ import DS from 'ember-data';
 const { on, inject, isEmpty, Logger } = Ember;
 const { keys } = Object;
 
-const errors = new DS.Errors();
-
 export default Ember.Mixin.create({
 
-  errors,
+  errors: DS.Errors.create(),
 
   validationState: 'pending',
 
