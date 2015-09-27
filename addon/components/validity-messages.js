@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import ErrorDetectionMixin from 'validity/mixins/components/error-detection';
 
-let ValidityMessages = Ember.GlimmerComponent.extend(ErrorDetectionMixin, {
+let ValidityMessages = Ember.GlimmerComponent.extend({
 
   errorClass: Ember.computed('attrs.errorClass', function() {
     return this.attrs.errorClass || 'validity-error';

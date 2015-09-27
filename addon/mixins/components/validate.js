@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import ErrorDetection from 'validity/mixins/components/error-detection';
 import DS from 'ember-data';
 
 const { on, inject, isEmpty, Logger } = Ember;
@@ -7,11 +6,15 @@ const { keys } = Object;
 
 const errors = new DS.Errors();
 
-export default Ember.Mixin.create(ErrorDetection, {
+export default Ember.Mixin.create({
 
   errors,
 
+  validationState: 'pending',
+
   validator: inject.service(),
+
+  validityPending: Ember.computed.equal('validationState', 'pending'),
 
   /**
    * Sets up the validations and DOM events that trigger the validations.
@@ -68,6 +71,31 @@ export default Ember.Mixin.create(ErrorDetection, {
     });
   },
 
+  _updateState() {
+    const validations = this.get('validations');
+    const keys = Object.keys(validations);
+    let state = 'pending',
+        pass = 0;
+
+    if (validations) {
+
+      keys.forEach((key)=> {
+        if (validations[key].state === 'pass') {
+          pass++;
+        } else if (validations[key].state === 'fail') {
+          state = 'fail';
+        }
+      });
+
+      if (pass === keys.length) {
+        state = 'pass';
+      }
+
+    }
+
+    this.set('validationState', state);
+  },
+
   /**
    * Validates the properties described in the validations map and returns a Promise.
    *
@@ -84,9 +112,17 @@ export default Ember.Mixin.create(ErrorDetection, {
 
   _validate(validations) {
     keys(validations).forEach((key)=> {
-      validations[key].value = this.get(validations[key].property);
+      let value;
+      if (this.isGlimmerComponent) {
+        value = this.attrs[validations[key].property];
+      } else {
+        value = this.get(validations[key].property);
+      }
+      validations[key].value = value;
     });
 
-    return this.get('validator').validate(validations, this.get('errors'));
+    return this.get('validator').validate(validations, this.get('errors'))['finally'](()=> {
+      this._updateState();
+    });
   }
 });

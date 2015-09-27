@@ -1,6 +1,6 @@
 <div class="validity-messages">
 
-  {{#if hasErrors}}
+  {{#unless attrs.errors.isEmpty}}
 
     {{#each attrs.errors as |error|}}
 
@@ -8,6 +8,6 @@
 
     {{/each}}
 
-  {{/if}}
+  {{/unless}}
 
 </div>

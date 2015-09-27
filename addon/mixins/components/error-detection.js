@@ -7,36 +7,15 @@ export default Ember.Mixin.create({
    * @property {Boolean} hasErrors
    * @readOnly
    */
-  hasErrors: Ember.computed('attrs.errors', 'errors', function() {
+  hasErrors: Ember.computed('attrs.errors.[]', 'errors.[]', function() {
+    let errors;
+
     if (this.isGlimmerComponent) {
-      let errors = this.attrs.errors || this.get('errors');
-      return errors && !!errors.length;
+      errors = this.attrs.errors || this.get('errors');
     } else {
-      return this.get('errors') && !!this.get('errors').length;
+      errors = this.get('errors');
     }
-  }),
-
-  /**
-   * A boolean property that indicates if the validations are in a pending state or not.
-   *
-   * @property {Boolean} validityPenging
-   * @readOnly
-   */
-  validityPending: Ember.computed('validations', function() {
-    const validations = this.get('validations');
-
-    if (validations) {
-      let pending = true;
-
-      Object.keys(validations).forEach((key)=> {
-        if (validations[key].state !== 'pending') {
-          pending = false;
-        }
-      });
-
-      return pending;
-    } else {
-      return false;
-    }
+    console.log(errors && !errors.get('isEmpty'));
+    return errors && !errors.get('isEmpty');
   }).volatile()
 });
