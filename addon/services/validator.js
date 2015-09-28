@@ -15,7 +15,7 @@ export default Ember.Service.extend({
   validate(validations, errors) {
     // Convert the validations to promises
     const promises = keys(validations).map((key)=> {
-      const promise = validations[key].validator.run(validations[key].value, validations[key].options);
+      const promise = validations[key].run();
       promise.key = key; // sets the validation object key to use later.
       return promise;
     });
@@ -68,37 +68,45 @@ export default Ember.Service.extend({
     const types = keys(rules);
     const validations = {};
 
+    function createValidator(factory, model, property, options) {
+      let validator = factory.create();
+      validator.setProperties({ model, property, options });
+
+      return validator;
+    }
+
     types.forEach((type)=> {
       const validatorName = `validator:${type}`;
-      let validator;
 
+      // TODO: review if we can use a cached validator. Seems like creating and destroying validators
+      // per form is not that big of a deal. Even with a form with 100 form fields, how much memory
+      // would this actually take?
+      //
       // Use validator in cache or create a new one.
-      if (!this.container.cache[validatorName]) {
-        this.container.registry.register(validatorName, this.container.lookupFactory(validatorName));
-      }
-      validator = this.container.lookup(validatorName);
+      // if (!this.container.cache[validatorName]) {
+      //   this.container.registry.register(validatorName, this.container.lookupFactory(validatorName));
+      // }
 
-      Ember.assert(`Validator with the name ${type} was not found.`, Ember.isPresent(validator));
+      let validatorFactory = this.container.lookupFactory(validatorName);
+
+      Ember.assert(`Validator with the name ${type} was not found.`, Ember.isPresent(validatorFactory));
+
 
       if (typeof rules[type] === 'object') {
         // handle multiple properties
         keys(rules[type]).forEach((property)=> {
-          const options = rules[type][property] === true ? {} : rules[type][property].options;
+          const options = rules[type][property] === true ? {} : rules[type][property].options || {};
 
-          validations[`${type}:${property}`] = { validator, property, options, state: 'pending' };
+          validations[`${type}:${property}`] = createValidator(validatorFactory, this, property, options);
         });
       } else {
-        validations[`${type}:${rules[type]}`] = {
-          validator,
-          property: rules[type],
-          state: 'pending',
-          options: {}
-        };
+        validations[`${type}:${rules[type]}`] = createValidator(validatorFactory, this, rules[type], {});
       }
 
     });
 
     return validations;
   }
+
 
 });

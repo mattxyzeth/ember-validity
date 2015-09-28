@@ -7,7 +7,10 @@ export default ValidatorBase.extend({
     message: 'This is a required field.'
   },
 
-  run(value, options) {
+  run() {
+    const value = this.get('value');
+    const options = this.get('options');
+
     let message;
     if (options && options.message) {
       message = {

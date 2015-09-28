@@ -41,7 +41,7 @@ export default Ember.Mixin.create({
       });
 
       // convert and set the validators
-      this.set('validations', this.get('validator').convertValidations(rules));
+      this.set('validations', this.get('validator').convertValidations.call(this, rules));
     }
 
   }),
@@ -110,18 +110,6 @@ export default Ember.Mixin.create({
   },
 
   _validate(validations) {
-    keys(validations).forEach((key)=> {
-      const property = validations[key].property;
-      let value;
-
-      if (this.isGlimmerComponent && this.attrs[property]) {
-        value = this.attrs[property];
-      } else {
-        value = this.get(property);
-      }
-      validations[key].value = value;
-    });
-
     return this.get('validator').validate(validations, this.get('errors'))['finally'](()=> {
       this._updateState();
     });
