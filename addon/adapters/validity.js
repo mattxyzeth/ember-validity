@@ -19,8 +19,6 @@ export default Ember.Object.extend({
   }),
 
   request(data, options) {
-    const { message } = options;
-
     return new Ember.RSVP.Promise( (resolve, reject)=> {
       const ajaxOptions = {
         url: this.get('url'),
@@ -33,7 +31,7 @@ export default Ember.Object.extend({
         data: JSON.stringify(data),
         success: resolve,
         error: (xhr)=> {
-          reject([this.processError(xhr.responseJSON, message)]);
+          reject(this.processError(xhr.responseJSON));
         }
       };
 
@@ -43,8 +41,6 @@ export default Ember.Object.extend({
 
   processError(error,message) {
     // TODO: make this process multiple errors.
-    return {
-      message: message || error.errors[0].detail
-    };
+    return error.errors[0].detail;
   }
 });

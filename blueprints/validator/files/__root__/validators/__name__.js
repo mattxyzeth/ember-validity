@@ -6,6 +6,15 @@ const { RSVP } = Ember;
 export default BaseValidator.extend({
 
   /**
+   * The default message to return if the validation failed.
+   * This will be overridden if a message is supplied in the
+   * validation map's options hash.
+   *
+   * @property {String}
+   */
+  defaultMessage: 'The validation failed',
+
+  /**
    * Runs the validation against the value and returns
    * a Promise that either resolves if the validation passed
    * or rejects if the validation failed.
@@ -13,8 +22,10 @@ export default BaseValidator.extend({
    * @return {Promise} A Promise that resolves to the result of the validation
    */
   run() {
-    const value = this.get('value');
-    const options = this.get('options');
+    // const value = this.get('value');
+    // const options = this.get('options');
+    // const message = this.get('message');
+    // const model = this.get('model');
 
     return RSVP.Promise.resolve();
   }

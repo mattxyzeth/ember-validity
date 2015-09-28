@@ -1,7 +1,11 @@
 import Ember from 'ember';
 import ValidatorBase from 'validity/validators/base';
 
+const { RSVP } = Ember;
+
 export default ValidatorBase.extend({
+
+  defaultMessage: 'The validation failed',
 
   run() {
     const value = this.get('value');
@@ -14,9 +18,14 @@ export default ValidatorBase.extend({
 
     // Only make the request if a value is present
     if (value) {
-      return adapter.request({value: value}, options);
+      return new RSVP.Promise((resolve, reject)=> {
+        adapter.request({value: value}, options).then(resolve, (response)=> {
+          this.set('defaultMessage', response);
+          reject(this.get('message'));
+        });
+      });
     } else {
-      return Ember.RSVP.Promise.reject();
+      return RSVP.Promise.reject();
     }
   }
 

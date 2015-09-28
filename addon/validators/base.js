@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-const { RSVP } = Ember;
+const { RSVP, computed } = Ember;
 
 export default Ember.Object.extend({
 
@@ -31,11 +31,22 @@ export default Ember.Object.extend({
   state: 'pending',
 
   /**
+   * The message to return if the validation fails.
+   *
+   * @property {Object)
+   */
+  message: computed('options', function() {
+    const options = this.get('options');
+
+    return { message: options.message || this.get('defaultMessage') };
+  }),
+
+  /**
    * The value to run the validations against
    *
    * @property {Mixed} value
    */
-  value: Ember.computed('model', 'options', function() {
+  value: computed('model', 'options', function() {
     const property = this.get('property');
     const model = this.get('model');
     let value;
