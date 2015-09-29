@@ -1,15 +1,21 @@
 import Ember from 'ember';
 
+const {
+  on,
+  computed,
+  RSVP
+} = Ember;
+
 export default Ember.Object.extend({
   baseURL:'',
   endPoint:'',
 
-  _setup: Ember.on('init', function() {
+  _setup: on('init', function() {
     var config = this.container.lookupFactory('config:environment');
     this.set('baseURL', config.baseURL);
   }),
 
-  url: Ember.computed('endPoint', function() {
+  url: computed('endPoint', function() {
     const url = [
       this.get('baseURL'),
       this.get('endPoint')
@@ -19,7 +25,7 @@ export default Ember.Object.extend({
   }),
 
   request(data, options) {
-    return new Ember.RSVP.Promise( (resolve, reject)=> {
+    return new RSVP.Promise( (resolve, reject)=> {
       const ajaxOptions = {
         url: this.get('url'),
         type: 'post',
@@ -31,7 +37,7 @@ export default Ember.Object.extend({
         data: JSON.stringify(data),
         success: resolve,
         error: (xhr)=> {
-          reject(this.processError(xhr.responseJSON));
+          reject(this.processErrors(xhr.responseJSON));
         }
       };
 
@@ -39,7 +45,7 @@ export default Ember.Object.extend({
     });
   },
 
-  processError(error,message) {
+  processErrors(error) {
     // TODO: make this process multiple errors.
     return error.errors[0].detail;
   }

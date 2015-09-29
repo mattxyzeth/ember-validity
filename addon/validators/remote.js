@@ -21,7 +21,7 @@ export default ValidatorBase.extend({
       return new RSVP.Promise((resolve, reject)=> {
         adapter.request({value: value}, options).then(resolve, (response)=> {
           this.set('defaultMessage', response);
-          reject(this.get('message'));
+          reject([this.get('message')]);
         });
       });
     } else {
