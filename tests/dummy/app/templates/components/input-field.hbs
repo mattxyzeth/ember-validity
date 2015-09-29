@@ -1,7 +1,19 @@
-<label for="username">Username</label>
+<div class="form-group">
 
-{{input value=value name='username'}}
+  <label for="username">Username</label>
 
-<button {{action 'submit' on='click'}}>Submit</button>
+  <div class="input-group">
 
-<validity-messages errors={{errors}} />
+    {{input value=value name="username" class="form-control"}}
+
+    <span class="input-group-btn">
+
+      <button {{action 'submit' on='click'}} class="btn btn-success">Submit</button>
+
+    </span>
+
+  </div>
+
+  <validity-messages errors={{errors}} />
+
+</div>
