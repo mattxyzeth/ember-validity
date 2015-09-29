@@ -1,7 +1,10 @@
 import Ember from 'ember';
 import BaseValidator from 'validity/validators/base';
 
-const { RSVP } = Ember;
+const {
+  RSVP,
+  isEmpty
+} = Ember;
 
 export default BaseValidator.extend({
 
@@ -20,7 +23,11 @@ export default BaseValidator.extend({
 
     return new RSVP.Promise((resolve, reject)=> {
       if (value !== confirmValue) {
-        reject([this.get('message')]);
+        if (isEmpty(value) || isEmpty(confirmValue)) {
+          reject();
+        } else {
+          reject([this.get('message')]);
+        }
       } else {
         resolve();
       }
