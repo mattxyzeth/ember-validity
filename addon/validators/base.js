@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
-const { RSVP, computed } = Ember;
+const {
+  computed
+} = Ember;
 
 export default Ember.Object.extend({
 

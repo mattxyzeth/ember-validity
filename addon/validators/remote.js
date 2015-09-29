@@ -19,7 +19,7 @@ export default ValidatorBase.extend({
     // Only make the request if a value is present
     if (value) {
       return new RSVP.Promise((resolve, reject)=> {
-        adapter.request({value: value}, options).then(resolve, (response)=> {
+        adapter.request({value: value}).then(resolve, (response)=> {
           this.set('defaultMessage', response);
           reject([this.get('message')]);
         });

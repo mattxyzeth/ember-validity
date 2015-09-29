@@ -20,7 +20,7 @@ export default BaseValidator.extend({
 
     return new RSVP.Promise((resolve, reject)=> {
       if (value !== confirmValue) {
-        reject(this.get('message'));
+        reject([this.get('message')]);
       } else {
         resolve();
       }

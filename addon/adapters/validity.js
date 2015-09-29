@@ -24,7 +24,7 @@ export default Ember.Object.extend({
     return url.replace(/\/\//g, '/');
   }),
 
-  request(data, options) {
+  request(data) {
     return new RSVP.Promise( (resolve, reject)=> {
       const ajaxOptions = {
         url: this.get('url'),
