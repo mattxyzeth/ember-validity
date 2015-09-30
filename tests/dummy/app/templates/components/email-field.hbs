@@ -1,11 +1,19 @@
-<div>
+<div class="form-group">
 
   <label for="email">Email</label>
 
-  {{input type="email" name="email" value=email}}
+  <div class="input-group">
 
-  <button {{action 'submit'}}>Submit</button>
+    {{input type="email" name="email" value=email class="form-control"}}
 
-  <validity-messages errors={{errors}} />
+    <span class="input-group-btn">
+
+      <button {{action 'submit'}} class="btn btn-success">Submit</button>
+
+    </span>
+
+  </div>
+
+  <validity-messages errors={{errors}} errorClass="alert alert-danger" />
 
 </div>
