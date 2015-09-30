@@ -7,19 +7,22 @@ const {
 export default Ember.Object.extend({
 
   /**
-   * The object to retrieve the values from.
+   * The object to retrieve the values from. This is set by the
+   * consuming object.
    *
    * @property {Object} model
    */
 
   /**
-   * The options the validator might consum
+   * The options the validator might consume. This is set by the
+   * consuming object.
    *
    * @property {Object} options
    */
 
   /**
-   * The property on the model to run the validation against
+   * The property on the model to run the validation against. This
+   * is set by the consuming object.
    *
    * @property {String} property
    */
