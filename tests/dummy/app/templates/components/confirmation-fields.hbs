@@ -1,0 +1,15 @@
+<div class="form-group">
+
+  <label for="password">Password</label>
+
+  {{input type="password" class="form-control" value=password}}
+
+  <label for="passwordConfirmation">Password Confirmation</label>
+
+  {{input type="password" class="form-control" value=passwordConfirmation}}
+
+  <validity-messages errors={{errors}} errorClass="alert alert-danger" />
+
+</div>
+
+<button {{action 'submit'}} class="btn btn-success">Submit</button>
