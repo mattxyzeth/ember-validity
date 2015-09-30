@@ -8,7 +8,7 @@ const {
 
 export default BaseValidator.extend({
 
-  defautlMessage: 'The values must match',
+  defaultMessage: 'The values must match',
 
   /**
    * Runs the validation against the value and returns
