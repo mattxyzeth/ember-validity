@@ -1,7 +1,9 @@
 import Ember from 'ember';
 
 const {
-  computed
+  computed,
+  merge,
+  isPresent
 } = Ember;
 
 export default Ember.Object.extend({
@@ -18,7 +20,9 @@ export default Ember.Object.extend({
    * consuming object.
    *
    * @property {Object} options
+   * @default {Object} An empty object
    */
+  options: {},
 
   /**
    * The property on the model to run the validation against. This
@@ -34,6 +38,24 @@ export default Ember.Object.extend({
    * @default pending
    */
   state: 'pending',
+
+  /**
+   * Sets the properties used for this validator and merges any user
+   * defined options with the default ones.
+   *
+   * @method setupProps
+   * @param {Object} model The model to get values from
+   * @param {String} property The name of the property of the value to test
+   * @param {Object} options The user defined options for the validator
+   * @return Undefined
+   */
+  setupProps(model, property, options) {
+    this.setProperties({
+      model,
+      property,
+      options: isPresent(options) ? merge(this.get('options'), options) : this.get('options')
+    });
+  },
 
   /**
    * The message to return if the validation fails.

@@ -70,7 +70,7 @@ export default Ember.Service.extend({
 
     function createValidator(factory, model, property, options) {
       let validator = factory.create();
-      validator.setProperties({ model, property, options });
+      validator.setupProps(model, property, options);
 
       return validator;
     }

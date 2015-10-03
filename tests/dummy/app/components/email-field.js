@@ -6,7 +6,8 @@ const EmailComponent = Ember.GlimmerComponent.extend(ValidatorMixin, {
   layout: layout,
 
   validations: {
-    presence: 'email'
+    presence: 'email',
+    email: 'email'
   },
 
   actions: {
