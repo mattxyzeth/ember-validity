@@ -5,8 +5,7 @@ import {
   it
 } from 'ember-mocha';
 
-import { describe, before, after } from 'mocha';
-import Ember from 'ember';
+import { describe } from 'mocha';
 import PresenceValidator from 'validity/validators/presence';
 
 describeModule(
