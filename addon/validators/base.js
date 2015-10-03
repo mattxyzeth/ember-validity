@@ -20,9 +20,7 @@ export default Ember.Object.extend({
    * consuming object.
    *
    * @property {Object} options
-   * @default {Object} An empty object
    */
-  options: {},
 
   /**
    * The property on the model to run the validation against. This
@@ -50,10 +48,12 @@ export default Ember.Object.extend({
    * @return Undefined
    */
   setupProps(model, property, options) {
+    const defaultOptions = this.get('options') || {};
+
     this.setProperties({
       model,
       property,
-      options: isPresent(options) ? merge(this.get('options'), options) : this.get('options')
+      options: isPresent(options) ? merge(defaultOptions, options) : defaultOptions
     });
   },
 
