@@ -23,7 +23,7 @@ export default BaseValidator.extend({
     let attr = this.get('options.confirm');
 
     if (model.isGlimmerComponent) {
-      attr = 'attrs.'.concat(attr);
+      attr = `attrs.${attr}`;
     }
 
     const confirmValue = this.get('model').get(attr);
