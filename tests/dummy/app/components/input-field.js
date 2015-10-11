@@ -14,6 +14,16 @@ export default Ember.Component.extend(ValidatorMixin,{
     presence: {
       value: {
         on: 'focusOut'
+      },
+      username: {
+        on: 'focusOut'
+      }
+    },
+    match: {
+      value: {
+        options: {
+          regex: /^b$/
+        }
       }
     }
   },

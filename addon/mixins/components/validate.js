@@ -1,7 +1,13 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-const { on, inject, isEmpty, Logger } = Ember;
+const {
+  on,
+  inject,
+  isEmpty,
+  Logger,
+  computed
+} = Ember;
 const { keys } = Object;
 
 export default Ember.Mixin.create({
@@ -10,7 +16,9 @@ export default Ember.Mixin.create({
 
   validator: inject.service(),
 
-  validityPending: Ember.computed.equal('validationState', 'pending'),
+  validityPending: computed.equal('validationState', 'pending'),
+
+  validityValid: computed.equal('validationState', 'success'),
 
   /**
    * Sets up the validations and DOM events that trigger the validations.
@@ -21,24 +29,22 @@ export default Ember.Mixin.create({
   _setup: on('init', function() {
     const rules = this.get('validations');
 
-    // Set up the errors object for this instance
-    this.set('errors', DS.Errors.create());
+    let errors;
+    if (this.isGlimmerComponent) {
+      errors = this.get('attrs.errors');
+    } else {
+      errors = this.get('errors');
+    }
+
+    // Set up the errors object for this instance if needed
+    if (isEmpty(errors) || !(errors instanceof DS.Errors)) {
+      this.set('errors', DS.Errors.create());
+    }
 
     if (isEmpty(rules)) {
       Logger.warn('No validation object was found.');
     } else {
-
-      // handle global event listener
-      if (rules.hasOwnProperty('on')) {
-        this.on(rules.on, this.validate);
-      }
-
-      // handle individual event listeners
-      keys(rules).forEach((type)=> {
-        if (typeof rules[type] === 'object') {
-          this._registerValidationEvents(type, rules[type]);
-        }
-      });
+      this._registerValidationEvents(rules);
 
       // convert and set the validators
       this.set('validations', this.get('validator').convertValidations.call(this, rules));
@@ -55,18 +61,36 @@ export default Ember.Mixin.create({
    * @param {Object} rules The object of rules to inspect
    * @private
    */
-  _registerValidationEvents(type, rules) {
-    const validationRules = this.get('validations');
+  _registerValidationEvents(rules) {
+    const events = {};
 
-    keys(rules).forEach((property)=> {
-      const options = validationRules[type][property];
+    // handle global event listener
+    if (rules.hasOwnProperty('on')) {
+      this.on(rules.on, this.validate);
+    }
 
-      if (typeof options === 'object' && options.hasOwnProperty('on')) {
-        this.on(options.on, ()=> {
-          this._validateOne(`${type}:${property}`);
+    // Map all validators with events to arrays of keys
+    keys(rules).forEach((validatorName)=> {
+      if (typeof rules[validatorName] === 'object') {
+        keys(rules[validatorName]).forEach((property)=> {
+          const options = rules[validatorName][property];
+
+          if (typeof options === 'object' && options.on) {
+            if (isEmpty(events[options.on])) {
+              events[options.on] = [];
+            }
+
+            events[options.on].push({ property, validator: validatorName });
+          }
         });
       }
+    });
 
+    // Set up listeners for events
+    keys(events).forEach((key)=> {
+      this.on(key, (event)=> {
+        this._validateWithEvent(event.target.name, events[key]);
+      });
     });
   },
 
@@ -79,9 +103,9 @@ export default Ember.Mixin.create({
     if (validations) {
 
       keys.forEach((key)=> {
-        if (validations[key].state === 'pass') {
+        if (validations[key].get('state') === 'pass') {
           pass++;
-        } else if (validations[key].state === 'fail') {
+        } else if (validations[key].get('state') === 'fail') {
           state = 'fail';
         }
       });
@@ -104,14 +128,18 @@ export default Ember.Mixin.create({
     return this._validate(this.get('validations'));
   },
 
-  _validateOne(prop) {
-    const rules = { [prop]: this.get(`validations.${prop}`) };
-    this._validate(rules);
+  _validateWithEvent(property, keys) {
+    const validatorNames = keys.filter(obj => obj.property === property).map(obj => obj.validator);
+    const validators = this.get(`validations.${property}`).filter((validator)=> {
+      return validatorNames.indexOf(validator.get('validatorName')) !== -1;
+    });
+
+    this._validate({ [property]: validators });
   },
 
   _validate(validations) {
-    return this.get('validator').validate(validations, this.get('errors'))['finally'](()=> {
-      this._updateState();
-    });
+    return this.get('validator').validate(validations, this.get('errors')); //['finally'](()=> {
+      //this._updateState();
+    //});
   }
 });

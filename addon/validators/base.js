@@ -47,12 +47,13 @@ export default Ember.Object.extend({
    * @param {Object} options The user defined options for the validator
    * @return Undefined
    */
-  setupProps(model, property, options) {
+  setupProps(model, property, options, factoryName) {
     const defaultOptions = this.get('options') || {};
 
     this.setProperties({
       model,
       property,
+      validatorName: factoryName.split(':')[1],
       options: isPresent(options) ? merge(defaultOptions, options) : defaultOptions
     });
   },
