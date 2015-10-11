@@ -19,7 +19,14 @@ export default BaseValidator.extend({
    */
   run() {
     const value = this.get('value');
-    const confirmValue = this.get('model').get(this.get('options').confirm);
+    const model = this.get('model');
+    let attr = this.get('options.confirm');
+
+    if (model.isGlimmerComponent) {
+      attr = 'attrs.'.concat(attr);
+    }
+
+    const confirmValue = this.get('model').get(attr);
 
     return new RSVP.Promise((resolve, reject)=> {
       if (value !== confirmValue) {
