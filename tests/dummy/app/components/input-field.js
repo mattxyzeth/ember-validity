@@ -6,9 +6,7 @@ export default Ember.Component.extend(ValidatorMixin,{
     remote: {
       value: {
         on: 'focusOut',
-        options: {
-          url: '/api/presence'
-        }
+        url: '/api/presence'
       }
     },
     presence: {
@@ -17,13 +15,6 @@ export default Ember.Component.extend(ValidatorMixin,{
       },
       username: {
         on: 'focusOut'
-      }
-    },
-    match: {
-      value: {
-        options: {
-          regex: /^b$/
-        }
       }
     }
   },

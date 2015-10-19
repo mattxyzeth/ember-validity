@@ -26,18 +26,20 @@ export default BaseValidator.extend({
    * @return {Promise} A Promise that resolves to the result of the validation
    */
   run() {
+    this._super();
+
     const value = this.get('value');
     const options = this.get('options');
-    const message = this.get('message');
-    // const model = this.get('model');
 
     assert('You need to specify a RegEx to match against', isPresent(options.regex));
 
     return new RSVP.Promise((resolve, reject)=> {
       if (options.regex.test(value)) {
+        this.validationSucceeded();
         resolve();
       } else {
-        reject([message]);
+        this.validationFailed();
+        reject();
       }
     });
   }

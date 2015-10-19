@@ -6,18 +6,15 @@ export default Ember.Component.extend(ValidationMixin, {
   validations: {
     confirmation: {
       password: {
-        options: {
-          confirm: 'passwordConfirmation'
-        }
+        on: 'focusOut',
+        confirm: 'passwordConfirmation'
       }
     }
   },
 
   actions: {
     submit() {
-      this.validate()['finally'](()=> {
-        console.log(this.get('errors.messages'));
-      });
+      this.validate();
     }
   }
 

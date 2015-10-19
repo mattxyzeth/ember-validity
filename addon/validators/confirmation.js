@@ -3,12 +3,19 @@ import BaseValidator from 'validity/validators/base';
 
 const {
   RSVP,
-  isEmpty
+  isPresent
 } = Ember;
 
 export default BaseValidator.extend({
 
   defaultMessage: 'The values must match',
+
+  eventRules() {
+    return [
+      { property: this.get('property'), validator: this },
+      { property: this.get('options.confirm'), validator: this }
+    ];
+  },
 
   /**
    * Runs the validation against the value and returns
@@ -22,6 +29,8 @@ export default BaseValidator.extend({
     const model = this.get('model');
     let attr = this.get('options.confirm');
 
+    this._super();
+
     if (model.isGlimmerComponent) {
       attr = `attrs.${attr}`;
     }
@@ -29,13 +38,13 @@ export default BaseValidator.extend({
     const confirmValue = this.get('model').get(attr);
 
     return new RSVP.Promise((resolve, reject)=> {
-      if (value !== confirmValue) {
-        if (isEmpty(value) || isEmpty(confirmValue)) {
+      if (isPresent(value) && isPresent(confirmValue)) {
+        if (value !== confirmValue) {
+          this.validationFailed();
           reject();
-        } else {
-          reject([this.get('message')]);
         }
       } else {
+        this.validationSucceeded();
         resolve();
       }
     });

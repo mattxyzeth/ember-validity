@@ -13,16 +13,25 @@ export default ValidatorBase.extend({
 
     Ember.assert('There is no URL to send the request to.', Ember.isPresent(options.url));
 
+    this._super();
+
     const adapter = this.container.lookup('adapter:validity');
     adapter.endPoint = options.url;
 
     // Only make the request if a value is present
     if (value) {
       return new RSVP.Promise((resolve, reject)=> {
-        adapter.request({value: value}).then(resolve, (response)=> {
-          this.set('defaultMessage', response);
-          reject([this.get('message')]);
-        });
+        adapter.request({value: value}).then(
+          ()=> {
+            this.validationSucceeded();
+            resolve();
+          },
+          (response)=> {
+            this.set('defaultMessage', response);
+            this.validationFailed();
+            reject();
+          }
+        );
       });
     } else {
       return RSVP.Promise.reject();

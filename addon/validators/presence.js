@@ -7,13 +7,16 @@ export default ValidatorBase.extend({
 
   run() {
     const value = this.get('value');
-    const message = this.get('message');
+
+    this._super();
 
     return new Ember.RSVP.Promise( (resolve, reject)=> {
       if (value && value.length) {
+        this.validationSucceeded();
         resolve();
       } else {
-        reject([message]);
+        this.validationFailed();
+        reject();
       }
     });
   }

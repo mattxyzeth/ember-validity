@@ -3,7 +3,8 @@ import Ember from 'ember';
 const {
   computed,
   merge,
-  isPresent
+  isPresent,
+  RSVP
 } = Ember;
 
 export default Ember.Object.extend({
@@ -37,6 +38,10 @@ export default Ember.Object.extend({
    */
   state: 'pending',
 
+  eventRules() {
+    return {property: this.get('property'), validator: this};
+  },
+
   /**
    * Sets the properties used for this validator and merges any user
    * defined options with the default ones.
@@ -49,11 +54,12 @@ export default Ember.Object.extend({
    */
   setupProps(model, property, options, factoryName) {
     const defaultOptions = this.get('options') || {};
+    const validatorName = factoryName.split(':')[1];
 
     this.setProperties({
       model,
       property,
-      validatorName: factoryName.split(':')[1],
+      validatorName,
       options: isPresent(options) ? merge(defaultOptions, options) : defaultOptions
     });
   },
@@ -66,7 +72,7 @@ export default Ember.Object.extend({
   message: computed('options', function() {
     const options = this.get('options');
 
-    return { message: options.message || this.get('defaultMessage') };
+    return options.message || this.get('defaultMessage');
   }),
 
   /**
@@ -86,6 +92,29 @@ export default Ember.Object.extend({
     }
 
     return value;
-  }).volatile()
+  })['volatile'](),
+
+  toString() {
+    return this._debugContainerKey.split(':')[1];
+  },
+
+  validationFailed() {
+    const errors = this.get('model.errors');
+    errors.add(this.get('property'), this.get('message'));
+
+    this.set('state', 'fail');
+  },
+
+  validationSucceeded() {
+    this.set('state', 'pass');
+  },
+
+  run() {
+    this.set('state', 'pending');
+
+    this.get('model.errors').remove(this.get('property'));
+
+    return RSVP.Promise.resolve();
+  }
 
 });
