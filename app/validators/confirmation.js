@@ -1,1 +1,1 @@
-export { default } from 'validity/validators/confirmation';
+export { default } from 'ember-validity/validators/confirmation';

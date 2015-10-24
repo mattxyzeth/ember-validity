@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ValidatorMixin from 'validity/mixins/components/validate';
+import ValidatorMixin from 'ember-validity/mixins/components/validate';
 
 export default Ember.Component.extend(ValidatorMixin,{
   validations: {
@@ -11,9 +11,6 @@ export default Ember.Component.extend(ValidatorMixin,{
     },
     presence: {
       value: {
-        on: 'focusOut'
-      },
-      username: {
         on: 'focusOut'
       }
     }

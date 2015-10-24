@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import layout from '../templates/components/email-field';
-import ValidatorMixin from 'validity/mixins/components/validate';
+import ValidatorMixin from 'ember-validity/mixins/components/validate';
 
 const EmailComponent = Ember.GlimmerComponent.extend(ValidatorMixin, {
   layout: layout,

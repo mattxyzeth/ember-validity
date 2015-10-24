@@ -2,5 +2,5 @@
 'use strict';
 
 module.exports = {
-  name: 'validity'
+  name: 'ember-validity'
 };

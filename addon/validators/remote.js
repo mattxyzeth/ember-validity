@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ValidatorBase from 'validity/validators/base';
+import ValidatorBase from 'ember-validity/validators/base';
 
 const { RSVP } = Ember;
 

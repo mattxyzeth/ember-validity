@@ -1,11 +1,18 @@
-import { moduleForModel, test } from 'ember-qunit';
+/* jshint expr:true */
+import { expect } from 'chai';
+import {
+  describeModule,
+  it
+} from 'ember-mocha';
 
-moduleForModel('presence', 'Unit - Validator - presence', {
-  // Specify the other units that are required for this test.
-
-});
-
-test('it exists', function(assert) {
-  var validator = this.subject();
-  assert.ok(!!validator);
-});
+describeModule(
+  'validator:presence',
+  'Unit - Validator - Presence',
+  function() {
+    // Replace this with your real tests.
+    it('exists', function() {
+      var validator = this.subject();
+      expect(validator).to.be.ok;
+    });
+  }
+);

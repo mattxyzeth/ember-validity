@@ -6,7 +6,7 @@ import {
   before
 } from 'mocha';
 import Ember from 'ember';
-import ValidateMixin from 'validity/mixins/components/validate';
+import ValidateMixin from 'ember-validity/mixins/components/validate';
 
 describe('ValidateMixin', function() {
   let ValidateObject;

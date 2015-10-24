@@ -1,1 +1,1 @@
-export { default } from 'validity/validators/remote';
+export { default } from 'ember-validity/validators/remote';

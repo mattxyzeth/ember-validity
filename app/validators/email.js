@@ -1,1 +1,1 @@
-export { default } from 'validity/validators/email';
+export { default } from 'ember-validity/validators/email';

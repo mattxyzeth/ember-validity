@@ -1,4 +1,4 @@
-import MatchValidator from 'validity/validators/match';
+import MatchValidator from 'ember-validity/validators/match';
 
 export default MatchValidator.extend({
 

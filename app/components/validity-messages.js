@@ -1,1 +1,1 @@
-export { default } from 'validity/components/validity-messages';
+export { default } from 'ember-validity/components/validity-messages';

@@ -10,7 +10,7 @@ describeModule(
   'ValidityAdapter',
   {
     // Specify the other units that are required for this test.
-    // needs: ['serializer:foo']
+    needs: ['config:environment']
   },
   function() {
     // Replace this with your real tests.

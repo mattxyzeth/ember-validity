@@ -1,6 +1,6 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { test, moduleFor } from 'ember-qunit';
 
-moduleForModel('<%= dasherizedModuleName %>', '<%= friendlyTestName %>', {
+moduleFor('<%= dasherizedModuleName %>', '<%= friendlyTestName %>', {
   // Specify the other units that are required for this test.
 <%= typeof needs !== 'undefined' ? needs : '' %>
 });

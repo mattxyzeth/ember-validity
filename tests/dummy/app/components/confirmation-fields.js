@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ValidationMixin from 'validity/mixins/components/validate';
+import ValidationMixin from 'ember-validity/mixins/components/validate';
 
 export default Ember.Component.extend(ValidationMixin, {
 
