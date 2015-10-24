@@ -1,8 +1,8 @@
 <div class="validity-messages">
 
-  {{#unless attrs.errors.isEmpty}}
+  {{#unless errors.isEmpty}}
 
-    {{#each attrs.errors as |error|}}
+    {{#each errors as |error|}}
 
       <p class={{errorClass}}>{{error.message}}</p>
 

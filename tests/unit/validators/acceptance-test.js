@@ -1,8 +1,8 @@
 import { test, moduleFor } from 'ember-qunit';
 
-moduleFor('validator:<%= dasherizedModuleName %>', '<%= friendlyTestName %>', {
+moduleFor('validator:acceptance', 'Unit - Validator - acceptance', {
   // Specify the other units that are required for this test.
-<%= typeof needs !== 'undefined' ? needs : '' %>
+
 });
 
 test('it exists', function(assert) {

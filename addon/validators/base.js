@@ -112,8 +112,6 @@ export default Ember.Object.extend({
   run() {
     this.set('state', 'pending');
 
-    this.get('model.errors').remove(this.get('property'));
-
     return RSVP.Promise.resolve();
   }
 

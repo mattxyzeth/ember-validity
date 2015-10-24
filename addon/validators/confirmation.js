@@ -26,26 +26,23 @@ export default BaseValidator.extend({
    */
   run() {
     const value = this.get('value');
-    const model = this.get('model');
     let attr = this.get('options.confirm');
 
     this._super();
 
-    if (model.isGlimmerComponent) {
-      attr = `attrs.${attr}`;
-    }
-
     const confirmValue = this.get('model').get(attr);
 
     return new RSVP.Promise((resolve, reject)=> {
-      if (isPresent(value) && isPresent(confirmValue)) {
+      if (isPresent(value) || isPresent(confirmValue)) {
         if (value !== confirmValue) {
           this.validationFailed();
           reject();
+        } else {
+          this.validationSucceeded();
+          resolve();
         }
       } else {
-        this.validationSucceeded();
-        resolve();
+        reject();
       }
     });
   }

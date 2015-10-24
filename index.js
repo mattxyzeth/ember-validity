@@ -2,5 +2,10 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-validity'
+  name: 'ember-validity',
+
+  isDevelopingAddon: function() {
+    return true;
+  }
+
 };

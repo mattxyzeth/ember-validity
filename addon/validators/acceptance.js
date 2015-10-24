@@ -1,11 +1,7 @@
 import Ember from 'ember';
 import BaseValidator from 'ember-validity/validators/base';
 
-const {
-  RSVP,
-  assert,
-  isPresent
-} = Ember;
+const { RSVP } = Ember;
 
 export default BaseValidator.extend({
 
@@ -16,7 +12,7 @@ export default BaseValidator.extend({
    *
    * @property {String}
    */
-  defaultMessage: 'The validation failed',
+  defaultMessage: 'This option is mandatory.',
 
   /**
    * Runs the validation against the value and returns
@@ -26,27 +22,20 @@ export default BaseValidator.extend({
    * @return {Promise} A Promise that resolves to the result of the validation
    */
   run() {
-    this._super();
-
     const value = this.get('value');
-    const options = this.get('options');
-
-    assert('You need to specify a RegEx to match against', isPresent(options.regex));
+    // const options = this.get('options');
+    // const message = this.get('message');
+    // const model = this.get('model');
 
     return new RSVP.Promise((resolve, reject)=> {
       if (value) {
-        if (options.regex.test(value)) {
-          this.validationSucceeded();
-          resolve();
-        } else {
-          this.validationFailed();
-          reject();
-        }
+        this.validationSucceeded();
+        resolve();
       } else {
+        this.validationFailed();
         reject();
       }
     });
   }
 
 });
-

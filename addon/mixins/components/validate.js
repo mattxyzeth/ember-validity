@@ -10,20 +10,17 @@ const {
   RSVP
 } = Ember;
 
+const { equal } = computed;
+
 const { keys } = Object;
 
 export default Ember.Mixin.create({
 
-  isValid: computed(function() {
-    const validations = this.get('validations');
-    let pass = true;
+  validityState: 'pending',
 
-    keys(validations).forEach(property => {
-      pass = validations[property].state !== 'fail';
-    });
-
-    return pass;
-  }),
+  isValid: equal('validityState', 'pass'),
+  isInvalid: equal('validityState', 'fail'),
+  validationsPending: equal('validityState', 'pending'),
 
   /**
    * Sets up the validations and DOM events that trigger the validations.
@@ -72,6 +69,10 @@ export default Ember.Mixin.create({
     }
 
     types.forEach((type)=> {
+      if (type === 'on') {
+        return;
+      }
+
       const validatorName = `validator:${type}`;
 
       // TODO: review if we can use a cached validator. Seems like creating and destroying validators
@@ -142,6 +143,8 @@ export default Ember.Mixin.create({
 
   _updateState() {
     const validations = this.get('validations');
+    let fullState = 'pending',
+        fullPassCount = 0;
 
     keys(validations).forEach( key => {
       const validators = validations[key].validators;
@@ -153,6 +156,7 @@ export default Ember.Mixin.create({
 
         if (validatorState === 'fail') {
           state = 'fail';
+          fullState = 'fail';
         } else if (validatorState === 'pass') {
           pass++;
         }
@@ -160,10 +164,17 @@ export default Ember.Mixin.create({
 
       if (pass === validators.length) {
         state = 'pass';
+        fullPassCount++;
       }
 
-      validations[key].state = state;
+      this.set(`validations.${key}.state`, state);
     });
+
+    if (fullPassCount === keys(validations).length) {
+      fullState = 'pass';
+    }
+
+    this.set('validityState', fullState);
   },
 
   /**
@@ -173,6 +184,8 @@ export default Ember.Mixin.create({
    */
   validate() {
     const validations = this.get('validations');
+
+    // Reduces the property down to just an array of validators.
     const mappedValidations = keys(validations).reduce((result, property)=> {
       result[property] = validations[property].validators;
 
@@ -185,6 +198,12 @@ export default Ember.Mixin.create({
   _validate(validations) {
     const promises = keys(validations).reduce((result, key)=> {
 
+      // Clear the errors for each validator before running them.
+      validations[key].forEach((validator)=> {
+        this.get('errors').remove(validator.get('property'));
+      });
+
+      // Run the validators
       validations[key].forEach((validator)=> {
         result.push(validator.run());
       });
