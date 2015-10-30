@@ -211,6 +211,16 @@ export default Ember.Mixin.create({
       return result;
     }, []);
 
-    return RSVP.allSettled(promises)['finally'](()=> { this._updateState(); });
+    return RSVP.allSettled(promises).then((results)=> {
+      let isValid = true;
+
+      results.forEach((result)=> {
+        if (result.state === 'rejected') {
+          isValid = false;
+        }
+      });
+
+      return isValid;
+    })['finally'](()=> { this._updateState(); });
   }
 });
