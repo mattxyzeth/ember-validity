@@ -2,7 +2,7 @@ import Ember from 'ember';
 import layout from '../templates/components/email-field';
 import ValidatorMixin from 'ember-validity/mixins/components/validate';
 
-const EmailComponent = Ember.GlimmerComponent.extend(ValidatorMixin, {
+const EmailFieldComponent = Ember.GlimmerComponent.extend(ValidatorMixin, {
   layout: layout,
 
   validations: {
@@ -17,6 +17,6 @@ const EmailComponent = Ember.GlimmerComponent.extend(ValidatorMixin, {
   }
 });
 
-EmailComponent.reopenClass({ isComponentFactory: true });
+EmailFieldComponent.reopen({ isComponentFactory: true });
 
-export default EmailComponent;
+export default EmailFieldComponent;

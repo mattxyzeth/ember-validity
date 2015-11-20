@@ -75,6 +75,13 @@ export default Ember.Object.extend({
     return options.message || this.get('defaultMessage');
   }),
 
+  resetState() {
+    this.set('state', 'pending');
+
+    // Remove the observer immediatly so we don't have lingering observers.
+    this.get('model').removeObserver(this.get('property'), this, this.resetState);
+  },
+
   /**
    * The value to run the validations against
    *
@@ -101,6 +108,9 @@ export default Ember.Object.extend({
   validationFailed() {
     const errors = this.get('model.errors');
     errors.add(this.get('property'), this.get('message'));
+
+    // Add an observer to the models property so we can reset the state once it's interacted with.
+    this.get('model').addObserver(this.get('property'), this, this.resetState);
 
     this.set('state', 'fail');
   },

@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 const {
+  defineProperty,
   on,
   isEmpty,
   Logger,
@@ -87,6 +88,7 @@ export default Ember.Mixin.create({
 
       // The case where the given value is an object with multiple properties to validate
       if (typeof rules[type] === 'object') {
+
         // handle multiple properties
         keys(rules[type]).forEach((property)=> {
           // Check if there are any user defined options to pass in
@@ -107,23 +109,19 @@ export default Ember.Mixin.create({
 
           // Add the validator
           if (isEmpty(validations[property])) {
-            validations[property] = {
-              state: 'pending',
-              validators: []
-            };
+            validations[property] = [];
           }
 
-          validations[property].validators.push(validator);
+          validations[property].push(validator);
         });
+
+
       } else { // The case where the value for the validator key is a string of a single property name
         if (isEmpty(validations[rules[type]])) {
-          validations[rules[type]] = {
-            state: 'pending',
-            validators: []
-          };
+          validations[rules[type]] = [];
         }
 
-        validations[rules[type]].validators.push(createValidator(validatorName, this, rules[type], {}));
+        validations[rules[type]].push(createValidator(validatorName, this, rules[type], {}));
       }
 
     });
@@ -134,47 +132,49 @@ export default Ember.Mixin.create({
           return tup.property === event.target.name;
         }).map(tup => tup.validator);
 
-        this._validate({ [event.target.name]: validators });
+        if (validators.length) {
+          this._validate({ [event.target.name]: validators });
+        }
       });
     });
 
     this.set('validations', validations);
+
+    this.defineComputedStates();
   },
 
-  _updateState() {
-    const validations = this.get('validations');
-    let fullState = 'pending',
-        fullPassCount = 0;
+  defineComputedStates() {
+    const propList = keys(this.get('validations')).join(',');
+    const propPath = `validations.{${propList}}`;
 
-    keys(validations).forEach( key => {
-      const validators = validations[key].validators;
-      let state = 'pending',
-          pass = 0;
+    defineProperty(this, 'validationStates', computed(`${propPath}.@each.state`, function() {
+      const obj = {};
 
-      validators.forEach( validator => {
-        const validatorState = validator.get('state');
+      keys(this.get('validations')).forEach(property => {
+        const validators = this.get(`validations.${property}`);
+        let state = 'pending';
+        let passCount = 0;
 
-        if (validatorState === 'fail') {
-          state = 'fail';
-          fullState = 'fail';
-        } else if (validatorState === 'pass') {
-          pass++;
+        validators.forEach(validator => {
+          switch (validator.get('state')) {
+            case 'fail':
+              state = 'fail';
+              break;
+            case 'pass':
+              passCount++;
+              break;
+          }
+        });
+
+        if (passCount === validators.length) {
+          state = 'pass';
         }
+
+        obj[property] = state;
       });
 
-      if (pass === validators.length) {
-        state = 'pass';
-        fullPassCount++;
-      }
-
-      this.set(`validations.${key}.state`, state);
-    });
-
-    if (fullPassCount === keys(validations).length) {
-      fullState = 'pass';
-    }
-
-    this.set('validityState', fullState);
+      return obj;
+    }));
   },
 
   /**
@@ -183,16 +183,7 @@ export default Ember.Mixin.create({
    * @return {Promise} The promise that resolves the validation results
    */
   validate() {
-    const validations = this.get('validations');
-
-    // Reduces the property down to just an array of validators.
-    const mappedValidations = keys(validations).reduce((result, property)=> {
-      result[property] = validations[property].validators;
-
-      return result;
-    }, {});
-
-    return this._validate(mappedValidations);
+    return this._validate(this.get('validations'));
   },
 
   _validate(validations) {
@@ -221,6 +212,6 @@ export default Ember.Mixin.create({
       });
 
       return isValid;
-    })['finally'](()=> { this._updateState(); });
+    });
   }
 });
