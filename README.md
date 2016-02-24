@@ -1,60 +1,44 @@
-# Validity
+# Ember-Validity
+
+__This is a WIP ember-addon. Feel free to submit PR's or suggestions, but use at your own risk.__
+
+This ember add-on is a simple straight forward way to add validation rules to an ember object that will run validator classes against a given set of property values. You simply add the mixin to the object that will handle the validations, define your validation map then call the `validate` method and process the promise. The promise will pass a boolean defining if the validations passed or not. All the error messages will be added to a DS.Errors object on the object you add the mixin to.
 
 ### Component configuration
 
 ```javascript
 export default Ember.Component.extend({
   validation: {
-    type: '', // The type of validation to run
-    valueProperty: '', // What is the name of the property that holds the value
-    on: '', // If you'd like to run the validation on a DOM event
-    message: '', // If you'd like to override the default message.
-    options: {} // Each validator will have their own set of options.
+    validationName: { // Can be either an object of property names as keys and true or configuration as values
+      propertyName: true,
+      anotherPropertyName: {
+        on: 'focusOut', // DOM event to trigger the validaton on (optional)
+        message: 'Custom message to use' // Or omit to fall back to a default message in the validator
+      }
+    }
   }
 });
 ```
-If you didn't include a DOM event to trigger the validation, you can call `validate` yourself. The validation method will return a Promise so you can catch the errors yourself, or you can leave it up to Validity which will add all the errors to the errors object.
 
-Example
+Call validate and process the `then` method.
+
 ```javascript
-this.validate()['catch']( (errors)=> {
-  // handle the errors yourself
+this.validate().then((isValid)=> {
+  if (isValid) {
+    // finish the process.
+  }
 });
 ```
-
-And since it is a Promise, guess what!?! You can also handle a success response to do some cool UI changes.
-
-Example
-```javascript
-this.validate().then( ()=> {
-  // can you handle the success...?
-});
-```
-
-
 
 ### Validators
 
 Create custom validators.
 
+ember-validity comes with several validators. Please review them in the `addon/validators/` directory.
 
 ### Error Messages
 
-Use the `validator-messgages` component to display your error messages. Simply add the component to your template and pass it the errors object.
-
-### Error Detection Mixin
-
-If you'd like support for detecting when your validators return errors, add the `error-detection` mixin to your component and you will have the `hasErrors` and `errorsUndefined` properties available to use.
-
-```handlebars
-{{#unless errorsUndefined}}
-  {{#if hasErrors}}
-    <p>There was an error</p>
-  {{else}
-    <p>All is good</p>
-  {{/if}
-{{/unless}}
-```
+All error messages are added to a DS.Errors object that is found or added to the object you add the mixin to. So if you mixed in to a DS.Model, the errors would be added to the Model's DS.Errors object and related to the Model's properties. Or if you mixed in to a component, a DS.Errors object will be created for you.
 
 ## Installation
 
